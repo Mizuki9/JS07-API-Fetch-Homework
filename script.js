@@ -1,0 +1,1 @@
+console.log("JS07 - API Fetch Homework");
