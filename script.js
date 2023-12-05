@@ -74,7 +74,7 @@ class Row {
             <td>${this.#lastName}</td>
             <td>${this.#eMail}</td>
             <td><img src="${this.#picture}"
-                class="img-fluid rounded images-sizes" alt="Placeholder Image"></td>
+                class="img-fluid rounded-circle images-sizes" alt="Placeholder Image"></td>
           </tr>
       `
   }
@@ -110,17 +110,6 @@ const reorganizeDataIntoRowClass = async (url) => {
   return newRow;
 }
 
-const printUrlInDomRows = async (IdFromHTML, url) => {
-  const htmlContainer = document.getElementById(IdFromHTML);
-  const data = await reorganizeDataIntoRowClass(url);
-  const arrayOfHtmlCodeWithData = data.map(
-    (element, index, array) => new Row(element.id, element.firstName, element.lastName, element.eMail, element.picture).row());
-  htmlContainer.innerHTML = arrayOfHtmlCodeWithData.join("");
-  showButton("reload-user-information-button");
-}
-
-const emptyPlaceholdersFromHtml = IdFromHTML => (document.getElementById(IdFromHTML)).innerHTML = "";
-
 const sendFetchedDataToLocalStorage = async (url) => {
   const data = (await getInformationFromUrl(url)).data;
   localStorage.setItem("data", JSON.stringify(data));
@@ -129,8 +118,19 @@ const sendFetchedDataToLocalStorage = async (url) => {
   const localData = localStorage.getItem("data");
   console.log(`(${localStorage.getItem("time")}) Stored the following information in the local storage:`);
   console.table(localData ? JSON.parse(localData) : []);
-
 }
+
+const printUrlInDomRows = async (IdFromHTML, url) => {
+  const htmlContainer = document.getElementById(IdFromHTML);
+  const data = await reorganizeDataIntoRowClass(url);
+  const arrayOfHtmlCodeWithData = data.map(
+    (element, index, array) => new Row(element.id, element.firstName, element.lastName, element.eMail, element.picture).row());
+  sendFetchedDataToLocalStorage(url);
+  htmlContainer.innerHTML = arrayOfHtmlCodeWithData.join("");
+  showButton("reload-user-information-button");
+}
+
+const emptyPlaceholdersFromHtml = IdFromHTML => (document.getElementById(IdFromHTML)).innerHTML = "";
 
 const printLocalStorageInDomRows = async (IdFromHTML, localStorageData) => {
   const data = localStorageData.map(element => new Row(
@@ -156,7 +156,6 @@ emptyPlaceholdersFromHtml("empty-rows");
 hideButton("reload-user-information-button");
 const url = "https://reqres.in/api/users?delay=3";
 printUrlInDomRows("empty-rows", url);
-sendFetchedDataToLocalStorage(url);
 
 // ======================= Button Function =======================
 
